@@ -46,18 +46,6 @@ def run_full_data(data, forcing=True):
         onehot = torch.zeros((out.shape[0], out.shape[1] + 1), device=Config.device)
         onehot.scatter_(1, pred, 1)
         onehot = onehot[:, 1:]
-
-    #if forcing:
-    #    force = (data.y.detach() + 1) * mask
-    #    onehot = torch.zeros((out.shape[0], out.shape[1] + 1), device=Config.device)
-    #    onehot.scatter_(1, force.view(-1, 1), 1)
-    #    onehot = onehot[:, 1:]
-    #    onehot_pred = torch.zeros(out.shape, device=Config.device)
-    #    onehot_pred.scatter_(1, pred, 1)
-    #    onehot += onehot_pred
-       # norm
-    #    onehot=onehot/torch.sum(onehot,dim=-1,keepdim=True)
-
     else:    #return onehot
         onehot = torch.zeros(out.shape, device=Config.device)
         onehot.scatter_(1, pred, 1)
@@ -73,15 +61,6 @@ def valid(data):
     val_acc = int(val_correct.sum()) / int(data.val_mask.sum())  # Derive ratio of correct predictions.
     return val_acc
 
-
-
-# def LP(data):
-#     y_train = ((data.y + 1) * data.train_mask) # 只用训练集数据，无标签置为0
-#     num_classes = data.y.shape[1]
-#     y = torch.index_select()
-#
-#     predict = y.to(Config.devicej
-#     return predict
 
 
 if __name__ == "__main__":
@@ -108,18 +87,15 @@ if __name__ == "__main__":
 
     warnings.filterwarnings("ignore")
 
-    optimized_params = nni.get_next_parameter()
+#     optimized_params = nni.get_next_parameter()
     args_dict = vars(args)
-    args_dict.update(optimized_params)
+#     args_dict.update(optimized_params)
     args = argparse.Namespace(**args_dict)
 
     train_rate = 0.6
     val_rate = 0.2
     # class balance for training dataset
-    if args.dataset == 'penn94':
-        num_nodes = torch.count_nonzero(data.y + 1).item()
-    else:
-        num_nodes = dataset.num_nodes
+    num_nodes = dataset.num_nodes
     percls_trn = int(round(train_rate * num_nodes / dataset.num_classes))
     val_lb = int(round(val_rate * num_nodes))
     accs, test_accs = [], []
@@ -131,9 +107,7 @@ if __name__ == "__main__":
         # training settings
         seed_everything(args.baseseed + rand)
         data = random_planetoid_splits(data, dataset.num_classes, percls_trn, val_lb).to(Config.device)
-        if args.model == 'GCN_post':
-            model = GCN_post(dataset.num_features, dataset.num_classes, args)
-        elif args.model == 'NHGCN':
+        if args.model == 'NHGCN':
             model = NHGCN(dataset.num_features, dataset.num_classes, args)
         elif args.model == 'GCN':
             model = GCN_Net(dataset.num_features, dataset.num_classes, args)
