@@ -11,6 +11,8 @@ from config import Config
 
 
 def cal_nei_index(name, ei, k, num_nodes, include_self=1):
+    if not os.path.exists('index'):
+        os.makedirs('index')
     if include_self:
         path_name = f'index/{name}_hop{k}.npy'
     else:
@@ -20,8 +22,6 @@ def cal_nei_index(name, ei, k, num_nodes, include_self=1):
     else:
         neigh_dict = {}
         for id in trange(num_nodes):
-            # neigh = k_hop_subgraph(id, k, ei)[0]
-            # exclude self
             if include_self:
                 neigh = k_hop_subgraph(id, k, ei)[0]
             else:
