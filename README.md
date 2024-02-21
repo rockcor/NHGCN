@@ -1,6 +1,6 @@
 # NHGCN
-A metric guided GCN
+A metric guided GCN for heterophily
 # Easy Start
-1. unzip `data.zip`
-2. pip install -r `requirement.yaml`
-3. run `Reproduce.sh`
+1. `unzip data.zip -d data`
+2. `pip install -r requirement.yaml`
+3. `bash Reproduce.sh`
